@@ -1,10 +1,14 @@
 package state;
 
+import strategy.PaymentContext;
+import strategy.PaymentStrategy;
+
 public class Order {
     private final String id;
     private final String productName;
     private final double amount;
     private OrderState currentState;
+    private final PaymentContext paymentContext = new PaymentContext(); // Strategy: طريقة الدفع الحالية
 
     public Order(String id, String productName, double amount) {
         this.id = id;
@@ -35,6 +39,15 @@ public class Order {
         this.currentState = state;
     }
 
+    // Strategy: تغيير طريقة الدفع وقت التشغيل
+    public void setPaymentStrategy(PaymentStrategy strategy) {
+        paymentContext.setPaymentStrategy(strategy);
+    }
+
+    public PaymentContext getPaymentContext() {
+        return paymentContext;
+    }
+
     public OrderState getState() {
         return currentState;
     }
@@ -58,6 +71,7 @@ public class Order {
 
     @Override
     public String toString() {
-        return "Order{id='" + id + "', product='" + productName + "', amount=" + amount + ", status='" + getStatus() + "'}";
+        return "Order{id='" + id + "', product='" + productName + "', amount=" + amount + ", status='" + getStatus() + "', payment='"
+                + (paymentContext.getPaymentStrategy() == null ? "-" : paymentContext.getPaymentStrategy().getName()) + "'}";
     }
 }
