@@ -3,8 +3,17 @@ package state;
 public class PendingState implements OrderState {
     @Override
     public void pay(Order order) {
-        System.out.println("[State] Order " + order.getId() + " has been paid. Transitioning: Pending -> Paid.");
-        order.setState(new PaidState());
+        if (order.getPaymentContext().getPaymentStrategy() == null) {
+            System.out.println("[Error] Choose a payment method for order " + order.getId() + " first.");
+            return;
+        }
+        // الدفع يتم عبر الاستراتيجية الحالية (Strategy) دون معرفة نوعها
+        if (order.getPaymentContext().executePayment(order.getAmount())) {
+            System.out.println("[State] Order " + order.getId() + " has been paid. Transitioning: Pending -> Paid.");
+            order.setState(new PaidState());
+        } else {
+            System.out.println("[Error] Payment failed for order " + order.getId() + ".");
+        }
     }
 
     @Override
